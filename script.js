@@ -2,7 +2,7 @@
 
 const mainDisplay = document.querySelector(".main-display");
 const subDisplay = document.querySelector(".sub-display");
-const numberButton = document.querySelectorAll(".number");
+const numberButtons = document.querySelectorAll(".number");
 const allClearButton = document.querySelector(".all-clear");
 
 const clearButton = document.querySelector(".clear");
@@ -17,47 +17,37 @@ let num2 = 0;
 let inOperation = false;
 let showingResult = false;
 
-let operationType;
 let expression;
 
 // Adiciona o número do botão ao display da calculadora.
-for (let number of numberButton) {
+for (const number of numberButtons) {
     number.addEventListener("click", () => {
-        if (mainDisplay.textContent === "0") {
-            displayIn(mainDisplay, number.textContent);
-        } else if (showingResult) {
-            resetCalculator(number.textContent);
-            showingResult = false;
+        const num = number.textContent;
+        if (num !== ".") {
+            if (mainDisplay.textContent === "0") {
+                displayIn(mainDisplay, num);
+            } else if (showingResult) {
+                resetCalculator(num);
+                showingResult = false;
+            } else {
+                mainDisplay.textContent += num;
+            }
         } else {
-            mainDisplay.textContent += number.textContent;
+            mainDisplay.textContent.includes(".")
+                ? (mainDisplay.textContent += "")
+                : (mainDisplay.textContent += num);
         }
     });
 }
 
 // Permite o usuario escolher uma das 4 operações
-for (let operation of operations) {
+for (const operation of operations) {
     operation.addEventListener("click", () => {
-        let operationSymbol;
+        const operationSymbol = `${operation.classList[1]}`;
 
-        operationType = `${operation.classList[1]}`;
         inOperation = true;
         showingResult = false;
         num1 = Number(mainDisplay.textContent);
-
-        switch (operationType) {
-            case "plus":
-                operationSymbol = "+";
-                break;
-            case "minus":
-                operationSymbol = "-";
-                break;
-            case "times":
-                operationSymbol = "*";
-                break;
-            case "div":
-                operationSymbol = "/";
-                break;
-        }
 
         displayIn(mainDisplay, 0);
         expression = `${num1} ${operationSymbol}`;
@@ -71,6 +61,10 @@ equalButton.addEventListener("click", () => {
         num2 = Number(mainDisplay.textContent);
         expression += ` ${num2}`;
         let result = eval(expression);
+
+        if (result.toString().length > 10) {
+            result = result.toFixed(10);
+        }
 
         expression += " =";
 
@@ -90,19 +84,19 @@ allClearButton.addEventListener("click", () => resetCalculator(0));
 clearButton.addEventListener("click", () => {
     if (mainDisplay.textContent.length === 1) {
         displayIn(mainDisplay, 0);
-    } else if (mainDisplay.textContent != "0") {
-        let newDisplay = mainDisplay.textContent.slice(0, -1);
+    } else if (mainDisplay.textContent !== "0") {
+        const newDisplay = mainDisplay.textContent.slice(0, -1);
         displayIn(mainDisplay, newDisplay);
     }
 });
 
 percentButton.addEventListener("click", () => {
-    let percent = Number(mainDisplay.textContent) / 100;
+    const percent = Number(mainDisplay.textContent) / 100;
     displayIn(mainDisplay, percent);
 });
 
 invertButton.addEventListener("click", () => {
-    let invertNum = Number(mainDisplay.textContent) * -1;
+    const invertNum = Number(mainDisplay.textContent) * -1;
     displayIn(mainDisplay, invertNum);
 });
 
